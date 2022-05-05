@@ -1,0 +1,40 @@
+﻿[*.cs]
+
+# SA1100: Do not prefix calls with base unless local implementation exists
+dotnet_diagnostic.SA1100.severity = none
+
+# SA1124: Do not use regions
+dotnet_diagnostic.SA1124.severity = none
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity = none
+
+# SA1200: Using directives should be placed correctly
+dotnet_diagnostic.SA1200.severity = none
+
+# SA1208: System using directives should be placed before other using directives
+dotnet_diagnostic.SA1208.severity = none
+
+# SA1612: Element parameter documentation should match element parameters
+dotnet_diagnostic.SA1612.severity = none
+
+# SA1611: Element parameters should be documented
+dotnet_diagnostic.SA1611.severity = none
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = none
+
+# SA1117: Parameters should be on same line or separate lines
+dotnet_diagnostic.SA1117.severity = none
+
+# S927: parameter names should match base declaration and other partial definitions
+dotnet_diagnostic.S927.severity = none
+
+# S101: Types should be named in PascalCase
+dotnet_diagnostic.S101.severity = none
+
+# S1118: Utility classes should not have public constructors
+dotnet_diagnostic.S1118.severity = none
+
+# S2259: Null pointers should not be dereferenced
+dotnet_diagnostic.S2259.severity = none
