@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Messaging.ServiceBus;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +10,41 @@ namespace BurgerKingOrder.MicroService.Controllers
     [ApiController]
     public class BKOrderController : ControllerBase
     {
-        // GET: api/<BKOrderController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly string connectionString;
+        private readonly IConfiguration _configuration;
+        private readonly string bkQueue;
+        public BKOrderController(IConfiguration configuration)
         {
-            return new string[] { "value1", "value2" };
+            _configuration = configuration;
+            connectionString = _configuration["ConnectionStrings:BKServiceBus"];
+            bkQueue = _configuration["ConnectionStrings:ServiceBusQueue"];
         }
-
-        // GET api/<BKOrderController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<BKOrderController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> CreateOrder(IEnumerable<BurgerOrder> orders)
         {
+            await ProcessOrder(orders);
+            return Ok();
         }
 
-        // PUT api/<BKOrderController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        private async Task ProcessOrder(IEnumerable<BurgerOrder> orders)
         {
-        }
+            try
+            {
+                ServiceBusClient client = new ServiceBusClient(connectionString);
+                ServiceBusSender sender = client.CreateSender(bkQueue);
+                foreach (var order in orders)
+                {
+                    string jsonEntity = JsonSerializer.Serialize(order);
+                    ServiceBusMessage serializedContents = new ServiceBusMessage(jsonEntity);
+                    await sender.SendMessageAsync(serializedContents);
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            
 
-        // DELETE api/<BKOrderController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
