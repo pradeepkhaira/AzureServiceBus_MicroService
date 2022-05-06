@@ -8,8 +8,8 @@ builder.Services.AddDbContext<OrderProcessContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("OrderProcessContext") ?? throw new InvalidOperationException("Connection string 'OrderProcessContext' not found.")));
 
 // Add services to the container.
-builder.Services.AddSingleton<IServiceBusConsumer,ServiceBusConsumer>();
-builder.Services.AddSingleton<IProcessData,ProcessData>();
+builder.Services.AddScoped<IServiceBusConsumer,ServiceBusConsumer>();
+builder.Services.AddScoped<IProcessData,ProcessData>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -29,7 +29,10 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-var bus = app.Services.GetService<IServiceBusConsumer>();
-bus.RegisterOnMessageHandlerAndReceiveMessages().GetAwaiter().GetResult();
+using (var scope = ((IApplicationBuilder)app).ApplicationServices.CreateScope())
+{
+    var sc = scope.ServiceProvider.GetService<IServiceBusConsumer>();
+    sc.RegisterOnMessageHandlerAndReceiveMessages().GetAwaiter().GetResult();
+}
 
 app.Run();

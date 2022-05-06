@@ -5,31 +5,39 @@ namespace BurgerKingOrderProcess.MicroService.Data
 {
     public class ProcessData : IProcessData
     {
-        private readonly OrderProcessContext _orderProcessContext;
+        private readonly IConfiguration _configuration;
+        private readonly string _connectionString;
+        
 
-        public ProcessData(OrderProcessContext orderProcessContext)
+        public ProcessData(IConfiguration configuration)
         {
-            _orderProcessContext = orderProcessContext;
+            _configuration = configuration;
+            _connectionString= _configuration["ConnectionStrings:OrderProcessContext"];
         }
 
         public async Task<IEnumerable<BurgerKingOrder>> GetBurgerKingOrders()
         {
-            return await _orderProcessContext.BurgerKingOrder.ToListAsync();
+            using(var _orderProcessContext = new OrderProcessContext(_connectionString))
+            {
+                return await _orderProcessContext.BurgerKingOrder.ToListAsync();
+            }
         }
 
-        public async Task Process(BurgerKingOrder model)
+        public async Task Process(BurgerOrder model)
         {
-
-            await _orderProcessContext.AddAsync(new BurgerKingOrder
+            using (var _orderProcessContext = new OrderProcessContext(_connectionString))
             {
-                OderId = model.OderId,
-                OrderName = model.OrderName,
-                IsMeal = model.IsMeal,
-                Quantity = model.Quantity,
-            }) ;
+                await _orderProcessContext.AddAsync(new BurgerKingOrder
+                {
+                    OderId = model.OderId,
+                    OrderName = model.OrderName,
+                    IsMeal = model.IsMeal,
+                    Quantity = model.Quantity,
+                });
 
                 await _orderProcessContext.SaveChangesAsync();
-            
+
+            }
         }
 
     }

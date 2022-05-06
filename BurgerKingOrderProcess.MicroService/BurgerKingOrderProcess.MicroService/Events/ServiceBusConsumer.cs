@@ -50,8 +50,8 @@ namespace BurgerKingOrderProcess.MicroService.Events
 
         private async Task ProcessMessagesAsync(ProcessMessageEventArgs args)
         {
-            var myPayload = args.Message.Body.ToObjectFromJson<BurgerKingOrder>();
-            await _processData.Process(myPayload).ConfigureAwait(false);
+            var payload = args.Message.Body.ToObjectFromJson<BurgerOrder>();
+            await _processData.Process(payload).ConfigureAwait(false);
             await args.CompleteMessageAsync(args.Message).ConfigureAwait(false);
         }
 

@@ -4,7 +4,7 @@ namespace BurgerKingOrderProcess.MicroService.Data
 {
     public interface IProcessData
     {
-        Task Process(BurgerKingOrder model);
+        Task Process(BurgerOrder model);
         Task<IEnumerable<BurgerKingOrder>> GetBurgerKingOrders();
     }
 }

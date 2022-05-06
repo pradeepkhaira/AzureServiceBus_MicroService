@@ -8,10 +8,20 @@ using BurgerKingOrderProcess.MicroService.Models;
 
     public class OrderProcessContext : DbContext
     {
-        public OrderProcessContext (DbContextOptions<OrderProcessContext> options)
+    private string connectionString;
+
+    public OrderProcessContext (DbContextOptions<OrderProcessContext> options)
             : base(options)
         {
         }
 
-        public DbSet<BurgerKingOrder> BurgerKingOrder { get; set; }
+    public OrderProcessContext(string connectionString)
+    {
+        this.connectionString = connectionString;
+    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(connectionString);
+    }
+    public DbSet<BurgerKingOrder> BurgerKingOrder { get; set; }
     }
