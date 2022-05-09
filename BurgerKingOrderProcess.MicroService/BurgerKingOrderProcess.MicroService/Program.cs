@@ -9,6 +9,7 @@ builder.Services.AddDbContext<OrderProcessContext>(options =>
 
 // Add services to the container.
 builder.Services.AddScoped<IServiceBusConsumer,ServiceBusConsumer>();
+builder.Services.AddScoped<IServiceBusTopicSubscription, ServiceBusTopicSubscription>();
 builder.Services.AddScoped<IProcessData,ProcessData>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -33,6 +34,8 @@ using (var scope = ((IApplicationBuilder)app).ApplicationServices.CreateScope())
 {
     var sc = scope.ServiceProvider.GetService<IServiceBusConsumer>();
     sc.RegisterOnMessageHandlerAndReceiveMessages().GetAwaiter().GetResult();
+    var busSubscription = scope.ServiceProvider.GetService<IServiceBusTopicSubscription>();
+    busSubscription.PrepareFiltersAndHandleMessages().GetAwaiter().GetResult();
 }
 
 app.Run();
